@@ -24,4 +24,16 @@ UserSchema.pre('save', function(next){
     });
 });
 
+UserSchema.methods.passwordChecker = function(pass, cb) {
+    
+    bcrypt.compare(pass, this.password)
+        .then(loggedIn => {
+            cb(loggedIn)
+        })
+        .catch( err => {
+            console.log(err)
+        })
+};
+
+
 module.exports = mongoose.model('User', UserSchema);

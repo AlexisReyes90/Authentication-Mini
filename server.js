@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
+const { createToken } = require('./Users/userAuthToken');
 
 const User = require('./Users/userModel');
 
@@ -33,6 +34,28 @@ mongoose.connect('mongodb://localhost/AuthDemo')
         .catch(err => {
             res.status(500).json(err);
         })
+  })
+
+  server.put('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    User.findOne({ username })
+    .then(user => {
+      user.passwordChecker(password, loggedIn => {
+        if(loggedIn) {
+          const token = createToken(user)
+          res.status(201).json({ user, token })
+        } else {
+          res.status(401)
+        }
+      })
+      .catch(err => {
+        res.status(500).json(err)
+      })
+      .catch(err => {
+        res.status(500).json(err)
+      })
+    })
   })
 
 
